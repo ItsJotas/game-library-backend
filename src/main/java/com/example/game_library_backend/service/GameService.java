@@ -2,12 +2,17 @@ package com.example.game_library_backend.service;
 
 import com.example.game_library_backend.exception.customized.BadRequestException;
 import com.example.game_library_backend.model.Game;
-import com.example.game_library_backend.model.dto.output.GameCreateRequestDTO;
+import com.example.game_library_backend.model.dto.input.GameCreateRequestDTO;
+import com.example.game_library_backend.model.dto.input.GameFilterDTO;
+import com.example.game_library_backend.model.dto.output.GameResponseDTO;
 import com.example.game_library_backend.repository.GameRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,6 +51,17 @@ public class GameService {
         game.setStatus(true);
         uploadImage(game, gameCreateRequestDTO.getImage());
         save(game);
+    }
+
+    public Page<GameResponseDTO> getAllGames(GameFilterDTO filterDTO, Integer pageNumber, Integer pageSize,
+                                             String sortBy, String orderBy) {
+
+        Pageable paging = PageRequest.of(pageNumber, pageSize);
+        String enumName = Objects.isNull(filterDTO.getGameStatusEnum()) ? null : filterDTO.getGameStatusEnum().name();
+
+        Page<Game> gamePaged = repository.findAllPaged(paging, filterDTO.getName(), filterDTO.getLauncher(), enumName,
+                sortBy, orderBy);
+        return gamePaged.map(g -> mapper.map(g, GameResponseDTO.class));
     }
 
     public void save(Game game) {

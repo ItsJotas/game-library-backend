@@ -57,10 +57,9 @@ public class GameService {
                                              String sortBy, String orderBy) {
 
         Pageable paging = PageRequest.of(pageNumber, pageSize);
-        String enumName = Objects.isNull(filterDTO.getGameStatusEnum()) ? null : filterDTO.getGameStatusEnum().name();
 
-        Page<Game> gamePaged = repository.findAllPaged(paging, filterDTO.getName(), filterDTO.getLauncher(), enumName,
-                sortBy, orderBy);
+        Page<Game> gamePaged = repository.findAllPaged(paging, filterDTO.getName(), filterDTO.getLauncher(),
+                filterDTO.getGameStatusEnum(), sortBy, orderBy);
         return gamePaged.map(g -> mapper.map(g, GameResponseDTO.class));
     }
 

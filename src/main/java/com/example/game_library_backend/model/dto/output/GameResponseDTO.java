@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -23,6 +22,6 @@ public class GameResponseDTO {
     private GameStatusEnum gameStatusEnum;
     private LocalDate finishDate;
     private LocalDate oneHundredPercentDate;
-    private MultipartFile image;
+    private String imageUrl;
 
 }

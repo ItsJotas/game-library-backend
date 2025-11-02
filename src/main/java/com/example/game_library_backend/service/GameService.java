@@ -114,4 +114,8 @@ public class GameService {
             throw new BadRequestException("The One Hundred Percent Date cannot be in the future.");
         }
     }
+
+    public Integer getTotalGamesNumber() {
+        return repository.getTotalGamesNumber();
+    }
 }

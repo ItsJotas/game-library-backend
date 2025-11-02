@@ -28,4 +28,9 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     Page<Game> findAllPaged(Pageable paging, @Param("name") String name, @Param("launcher") String launcher,
                             @Param("gameStatus") GameStatusEnum gameStatus, @Param("sortBy") String sortBy,
                             @Param("orderBy") String orderBy);
+
+    @Query(value = """
+            SELECT count(g.id) FROM Game g WHERE g.status = true
+            """)
+    Integer getTotalGamesNumber();
 }

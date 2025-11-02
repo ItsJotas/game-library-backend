@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,5 +39,11 @@ public class GameController {
                                                              @RequestParam(defaultValue = "asc") String orderBy) {
         Page<GameResponseDTO> responseDTOPage = service.getAllGames(filterDTO, pageNumber, pageSize, sortBy, orderBy);
         return ResponseEntity.ok(responseDTOPage);
+    }
+
+    @GetMapping("/total-games")
+    public ResponseEntity<Integer> getTotalGamesNumber() {
+        Integer totalGamesNumber = service.getTotalGamesNumber();
+        return ResponseEntity.ok(totalGamesNumber);
     }
 }

@@ -10,9 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,14 +50,11 @@ public class GameService {
         save(game);
     }
 
-    public Page<GameResponseDTO> getAllGames(GameFilterDTO filterDTO, Integer pageNumber, Integer pageSize,
-                                             String sortBy, String orderBy) {
-
-        Pageable paging = PageRequest.of(pageNumber, pageSize);
-
-        Page<Game> gamePaged = repository.findAllPaged(paging, filterDTO.getName(), filterDTO.getLauncher(),
+    public List<GameResponseDTO> getAllGames(GameFilterDTO filterDTO, String sortBy, String orderBy) {
+        List<Game> games = repository.findAllPaged(filterDTO.getName(), filterDTO.getLauncher(),
                 filterDTO.getGameStatusEnum(), sortBy, orderBy);
-        return gamePaged.map(g -> mapper.map(g, GameResponseDTO.class));
+
+        return games.stream().map(g -> mapper.map(g, GameResponseDTO.class)).toList();
     }
 
     public void save(Game game) {

@@ -6,7 +6,6 @@ import com.example.game_library_backend.model.dto.output.GameResponseDTO;
 import com.example.game_library_backend.service.GameService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/game")
@@ -32,12 +32,10 @@ public class GameController {
     }
 
     @PostMapping("/find-all")
-    public ResponseEntity<Page<GameResponseDTO>> getAllGames(@RequestBody @Valid GameFilterDTO filterDTO,
-                                                             @RequestParam(defaultValue = "0") Integer pageNumber,
-                                                             @RequestParam(defaultValue = "10") Integer pageSize,
+    public ResponseEntity<List<GameResponseDTO>> getAllGames(@RequestBody @Valid GameFilterDTO filterDTO,
                                                              @RequestParam(defaultValue = "id") String sortBy,
                                                              @RequestParam(defaultValue = "asc") String orderBy) {
-        Page<GameResponseDTO> responseDTOPage = service.getAllGames(filterDTO, pageNumber, pageSize, sortBy, orderBy);
+        List<GameResponseDTO> responseDTOPage = service.getAllGames(filterDTO, sortBy, orderBy);
         return ResponseEntity.ok(responseDTOPage);
     }
 

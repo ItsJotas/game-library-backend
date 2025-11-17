@@ -2,12 +2,12 @@ package com.example.game_library_backend.repository;
 
 import com.example.game_library_backend.model.Game;
 import com.example.game_library_backend.model.enums.GameStatusEnum;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
@@ -25,7 +25,7 @@ public interface GameRepository extends JpaRepository<Game, Long> {
               CASE WHEN :sortBy = 'launcher' AND :orderBy = 'asc' THEN g.launcher END ASC,
               CASE WHEN :sortBy = 'launcher' AND :orderBy = 'desc' THEN g.launcher END DESC
             """)
-    Page<Game> findAllPaged(Pageable paging, @Param("name") String name, @Param("launcher") String launcher,
+    List<Game> findAllPaged(@Param("name") String name, @Param("launcher") String launcher,
                             @Param("gameStatus") GameStatusEnum gameStatus, @Param("sortBy") String sortBy,
                             @Param("orderBy") String orderBy);
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 @RestController
@@ -26,7 +27,8 @@ public class GameController {
     private final GameService service;
 
     @PostMapping(consumes = "multipart/form-data")
-    public ResponseEntity<Void> create(@ModelAttribute @Valid GameCreateRequestDTO gameCreateRequestDTO) throws IOException {
+    public ResponseEntity<Void> create(@ModelAttribute @Valid GameCreateRequestDTO gameCreateRequestDTO)
+            throws IOException, GeneralSecurityException {
         service.create(gameCreateRequestDTO);
         return ResponseEntity.ok().build();
     }

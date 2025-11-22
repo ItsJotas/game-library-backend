@@ -21,8 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,7 +30,6 @@ import java.util.List;
 public class UploadImageService {
 
     private static final GsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String SERVICE_ACCOUNT_KEY_PATH = getPathToGoogleCredentials();
 
     @Value("${file.upload-id}")
     private String imagesFolderId;
@@ -40,16 +37,10 @@ public class UploadImageService {
     @Value("${file.allowed-types}")
     private String allowedTypes;
 
-    private static String getPathToGoogleCredentials() {
-        String currentDirectory = System.getProperty("user.dir");
-        Path filePath = Paths.get(currentDirectory, "a.json");
-        return filePath.toString();
-    }
-
-    public void uploadImage(MultipartFile multipartFile, Game game) throws IOException, GeneralSecurityException {
+    public void uploadImage(MultipartFile multipartFile, Game game) throws IOException {
         verifyImageExtension(multipartFile);
 
-        File tempFile = File.createTempFile("temp", null);
+        File tempFile = File.createTempFile("img-", null);
         multipartFile.transferTo(tempFile);
 
         uploadImageToDrive(tempFile, game);
@@ -70,7 +61,7 @@ public class UploadImageService {
         }
     }
 
-    private void uploadImageToDrive(File file, Game game) throws GeneralSecurityException, IOException {
+    private void uploadImageToDrive(File file, Game game) {
 
         try {
             String folderId = imagesFolderId;
@@ -121,5 +112,14 @@ public class UploadImageService {
                 JSON_FACTORY,
                 credential
         ).build();
+    }
+
+    public void removeImageFromDrive(String imageId) {
+        try {
+            Drive drive = createDriveService();
+            drive.files().delete(imageId).execute();
+        } catch (Exception e) {
+            throw new BadRequestException("Unable to upload image");
+        }
     }
 }

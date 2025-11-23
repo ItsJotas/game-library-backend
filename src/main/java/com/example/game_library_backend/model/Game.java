@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,6 +51,10 @@ public class Game {
 
     @Column(name = "IMAGE_URL")
     private String imageUrl;
+
+    @OneToOne
+    @JoinColumn(name = "RATING_ID")
+    private Rating rating;
 
     @Column(name = "STATUS", nullable = false)
     private Boolean status;

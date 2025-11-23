@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter
@@ -23,5 +24,5 @@ public class GameResponseDTO {
     private LocalDate finishDate;
     private LocalDate oneHundredPercentDate;
     private String imageUrl;
-
+    private BigDecimal average;
 }

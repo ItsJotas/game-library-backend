@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -47,7 +48,19 @@ public class GameService {
         List<Game> games = repository.findAll(filterDTO.getName(), filterDTO.getLauncher(),
                 filterDTO.getGameStatusEnum(), sortBy, orderBy);
 
-        return games.stream().map(g -> mapper.map(g, GameResponseDTO.class)).toList();
+        List<GameResponseDTO> gamesDTO = games.stream().map(g -> mapper.map(g, GameResponseDTO.class)).toList();
+
+        gamesDTO.forEach(dto -> {
+            BigDecimal average = games.stream()
+                    .filter(game -> game.getId().equals(dto.getId()))
+                    .findFirst()
+                    .orElse(new Game())
+                    .getRating().getAverage();
+
+            dto.setAverage(average);
+        });
+
+        return gamesDTO;
     }
 
     public void save(Game game) {
@@ -103,13 +116,15 @@ public class GameService {
         game.setLauncher(launcher);
     }
 
-    private Game findById(Long gameId) {
+    public Game findById(Long gameId) {
         return repository.findById(gameId)
                 .orElseThrow(() -> new ObjectNotFoundException("Game not found with id: " + gameId));
     }
 
     public GameResponseDTO getGameById(Long gameId) {
         Game game = findById(gameId);
-        return mapper.map(game, GameResponseDTO.class);
+        GameResponseDTO gameDTO = mapper.map(game, GameResponseDTO.class);
+        gameDTO.setAverage(game.getRating().getAverage());
+        return gameDTO;
     }
 }

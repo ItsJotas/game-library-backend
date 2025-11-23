@@ -8,6 +8,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,8 +34,9 @@ public class Game {
     @Column(name = "NAME", nullable = false)
     private String name;
 
-    @Column(name = "LAUNCHER", nullable = false)
-    private String launcher;
+    @ManyToOne
+    @JoinColumn(name = "LAUNCHER_ID")
+    private Launcher launcher;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "GAME_STATUS_ENUM", nullable = false)

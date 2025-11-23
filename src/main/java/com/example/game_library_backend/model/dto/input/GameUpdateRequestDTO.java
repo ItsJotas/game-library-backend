@@ -16,7 +16,7 @@ import java.time.LocalDate;
 public class GameUpdateRequestDTO {
 
     private String name;
-    private String launcher;
+    private Long launcherId;
     private GameStatusEnum gameStatusEnum;
     private LocalDate finishDate;
     private LocalDate oneHundredPercentDate;

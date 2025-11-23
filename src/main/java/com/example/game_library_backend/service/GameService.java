@@ -3,6 +3,7 @@ package com.example.game_library_backend.service;
 import com.example.game_library_backend.exception.customized.BadRequestException;
 import com.example.game_library_backend.exception.customized.ObjectNotFoundException;
 import com.example.game_library_backend.model.Game;
+import com.example.game_library_backend.model.Launcher;
 import com.example.game_library_backend.model.dto.input.GameCreateRequestDTO;
 import com.example.game_library_backend.model.dto.input.GameFilterDTO;
 import com.example.game_library_backend.model.dto.input.GameUpdateRequestDTO;
@@ -23,6 +24,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class GameService {
 
+    private final LauncherService launcherService;
     private final UploadImageService uploadImageService;
     private final GameRepository repository;
     private final ModelMapper mapper;
@@ -30,17 +32,19 @@ public class GameService {
     @Transactional
     public void create(@Valid GameCreateRequestDTO gameCreateRequestDTO) throws IOException {
         verifyIfNameExists(gameCreateRequestDTO.getName(), null);
-
         validateDates(gameCreateRequestDTO.getFinishDate(), gameCreateRequestDTO.getOneHundredPercentDate());
 
         Game game = mapper.map(gameCreateRequestDTO, Game.class);
+        String imageUrl = uploadImageService.uploadImage(gameCreateRequestDTO.getImage());
+        game.setImageUrl(imageUrl);
+
+        setLauncher(gameCreateRequestDTO.getLauncherId(), game);
         game.setStatus(true);
-        uploadImageService.uploadImage(gameCreateRequestDTO.getImage(), game);
         save(game);
     }
 
     public List<GameResponseDTO> getAllGames(GameFilterDTO filterDTO, String sortBy, String orderBy) {
-        List<Game> games = repository.findAllPaged(filterDTO.getName(), filterDTO.getLauncher(),
+        List<Game> games = repository.findAll(filterDTO.getName(), filterDTO.getLauncher(),
                 filterDTO.getGameStatusEnum(), sortBy, orderBy);
 
         return games.stream().map(g -> mapper.map(g, GameResponseDTO.class)).toList();
@@ -82,14 +86,21 @@ public class GameService {
         Game game = findById(gameId);
         verifyIfNameExists(gameUpdateRequestDTO.getName(), game);
         mapper.map(gameUpdateRequestDTO, game);
+        setLauncher(gameUpdateRequestDTO.getLauncherId(), game);
 
         if (Objects.nonNull(gameUpdateRequestDTO.getImage()) && !gameUpdateRequestDTO.getImage().isEmpty()) {
             String imageId = game.getImageUrl().split("id=")[1].split("&sz")[0];
             uploadImageService.removeImageFromDrive(imageId);
-            uploadImageService.uploadImage(gameUpdateRequestDTO.getImage(), game);
+            String imageUrl = uploadImageService.uploadImage(gameUpdateRequestDTO.getImage());
+            game.setImageUrl(imageUrl);
         }
 
         save(game);
+    }
+
+    private void setLauncher(Long launcherId, Game game) {
+        Launcher launcher = launcherService.findById(launcherId);
+        game.setLauncher(launcher);
     }
 
     private Game findById(Long gameId) {

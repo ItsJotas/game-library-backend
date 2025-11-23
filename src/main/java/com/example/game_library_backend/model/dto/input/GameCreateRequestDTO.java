@@ -22,8 +22,7 @@ public class GameCreateRequestDTO {
     private String name;
 
     @NotNull(message = "The field Launcher cannot be null.")
-    @Size(max = 255, message = "The field Launcher cannot exceed 255 characters.")
-    private String launcher;
+    private Long launcherId;
 
     @NotNull(message = "The field Game Status cannot be null.")
     private GameStatusEnum gameStatusEnum;

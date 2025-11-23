@@ -18,7 +18,7 @@ public class GameResponseDTO {
 
     private Long id;
     private String name;
-    private String launcher;
+    private LauncherResponseDTO launcher;
     private GameStatusEnum gameStatusEnum;
     private LocalDate finishDate;
     private LocalDate oneHundredPercentDate;

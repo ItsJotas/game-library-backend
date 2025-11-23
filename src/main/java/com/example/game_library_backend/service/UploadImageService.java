@@ -1,7 +1,6 @@
 package com.example.game_library_backend.service;
 
 import com.example.game_library_backend.exception.customized.BadRequestException;
-import com.example.game_library_backend.model.Game;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -37,13 +36,13 @@ public class UploadImageService {
     @Value("${file.allowed-types}")
     private String allowedTypes;
 
-    public void uploadImage(MultipartFile multipartFile, Game game) throws IOException {
+    public String uploadImage(MultipartFile multipartFile) throws IOException {
         verifyImageExtension(multipartFile);
 
         File tempFile = File.createTempFile("img-", null);
         multipartFile.transferTo(tempFile);
 
-        uploadImageToDrive(tempFile, game);
+        return uploadImageToDrive(tempFile);
     }
 
     private void verifyImageExtension(MultipartFile file) {
@@ -61,7 +60,7 @@ public class UploadImageService {
         }
     }
 
-    private void uploadImageToDrive(File file, Game game) {
+    private String uploadImageToDrive(File file) {
 
         try {
             String folderId = imagesFolderId;
@@ -81,9 +80,7 @@ public class UploadImageService {
                     .setRole("reader");
             drive.permissions().create(uploadedFile.getId(), permission).execute();
 
-            String imageUrl = "https://drive.google.com/thumbnail?id=" + uploadedFile.getId() + "&sz=w2000";
-            game.setImageUrl(imageUrl);
-
+            return "https://drive.google.com/thumbnail?id=" + uploadedFile.getId() + "&sz=w2000";
         } catch (Exception e) {
             throw new BadRequestException("Unable to upload image");
         }
